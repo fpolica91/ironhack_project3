@@ -3,7 +3,7 @@ import "../App.css";
 import React, { Component } from "react";
 import * as THREE from "three";
 import Orbitcontrols from "three-orbitcontrols";
-import axios from "axios";
+
 
 
 class ThreeMap extends Component {
@@ -22,11 +22,7 @@ class ThreeMap extends Component {
   getData = async () => {
     const {url} = this.props
     if(url){
-    // await axios.get("http://localhost:5000/api/upload").then(response => {
-    //   this.setState({
-    //     picture: response.data
-    //   });
-    //  });
+  
     }
     return url
   };
@@ -37,8 +33,6 @@ class ThreeMap extends Component {
 
   initThree() {
     const {url} = this.props
-    console.log("MY URL");
-    console.log(url);
     let stats;
     let camera, scene, renderer;
     let group;
@@ -111,19 +105,15 @@ class ThreeMap extends Component {
   render() {
     return (
     
-    <div>  
-
-      {/* <h4>
-      <Link href="/details">Details</Link>
-      </h4> */}
+    <div 
+    style={{
+      height: this.props.height,
+      width: this.props.width,
+    }}
+    >  
 
         <div
-          style={{
-            height: this.props.height,
-            width: this.props.width,
-          }}
           id="WebGL-output"
-         
         />
          
         

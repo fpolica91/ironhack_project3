@@ -91,11 +91,11 @@ console.log(e.target);
 
     changePreview = (value) => {
     
-        return (
-            <div style={this.canvasStyle}>
-            {this.state.imageUrl && <ThreeMap url={value} height={this.height} width={this.width}/>}
-            </div>
-        )
+        // return (
+        //     <div style={this.canvasStyle}>
+        //     {this.state.imageUrl && <ThreeMap url={value} height="400" width="200"/>}
+        //     </div>
+        // )
    
     }
 
@@ -117,7 +117,7 @@ console.log(e.target);
     }
 
     render(){
-        const {caption} = this.props.formValues
+        const {caption, tags} = this.props.formValues
         return(
             <div className="formPost">
             <h1>New Post</h1>
@@ -131,6 +131,10 @@ console.log(e.target);
             
             <div style={this.canvasContainer} id="myCanvasContainer">
             {this.changePreview(this.state.imageUrl)}
+            </div>
+            <div>
+             <label htmlFor="tags"> Tags </label>
+            <input type="text" name="tags" value={tags} onChange={e => this.props.onChangeValue(e)}/>
             </div>
            
             <textarea style={this.textAreaStyle} type="text" value={caption} onChange={ e => this.props.onChangeValue(e)} name="caption" placeholder="write a caption..."></textarea>

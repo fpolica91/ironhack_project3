@@ -14,6 +14,7 @@ const errorHandler = err => {
     service,
   
     handleUpload (theFile) {
+      console.log(theFile)
       // console.log('file in service: ', theFile)
       return service.post('/upload', theFile)
         .then(res => res.data)

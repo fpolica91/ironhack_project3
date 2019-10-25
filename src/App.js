@@ -1,61 +1,68 @@
 import React, { Component } from "react";
-import {Switch, Link, Route } from 'react-router-dom'
+import { Switch, Link, Route } from "react-router-dom";
 import ThreeMap from "./Components/ThreeMap";
-import SinglePost from './Components/SinglePost';
-import PostForm from './Components/PostForm';
-import Signup from './Components/user-pages/Signup'
-import Login from './Components/user-pages/Login'
-import Profile from './Components/Profile';
-import "./index.css"
+import SinglePost from "./Components/SinglePost";
+import PostForm from "./Components/PostForm";
+import Signup from "./Components/user-pages/Signup";
+import Login from "./Components/user-pages/Login";
+import Profile from "./Components/Profile";
+
+import "./index.css";
 import axios from "axios";
 
 //CLOUDINARY
-import service from './api/service';
+import service from "./api/service";
+import List from "./Components/post.list";
+import Card from "./Components/cards";
+import Single from "./Components/common/single";
 
 class App extends Component {
-
-    state = {
-      currentUser: null,
-      username: "",
-      email: "",
-      password: "",
-      imageUrl: "",
-      imagePost: "",
-      caption: "",
-      // imageFile: [],
-      url: "http://localhost:5000/api/things",
-      postImgUrl: "http://localhost:5000/api/upload",
-      newPostUrl: 'http://localhost:5000',
-      images: [],
-      selectedFile: null,
-      message: ""
-    };
-  
-  // state = {
-  //   url: "http://localhost:5000/api/things",
-  //   images: []
-  // };
+  state = {
+    currentUser: null,
+    username: "",
+    email: "",
+    password: "",
+    imageUrl: "",
+    imagePost: "",
+    caption: "",
+    tags: "",
+    query: "",
+    // imageFile: [],
+    url: "http://localhost:5000/api/things",
+    fullPostUrl: "http://localhost:5000/createNewPost",
+    postImgUrl: "http://localhost:5000/api/upload",
+    newPostUrl: "http://localhost:5000",
+    images: [],
+    clone: [],
+    selectedFile: null,
+    message: ""
+  };
 
   async componentDidMount() {
-    await this.get_data_torender() 
+    await this.get_data_torender();
 
-    axios.get('http://localhost:5000/auth/loggedin', {withCredentials: true})
-    .then(responseFromBackend => {
-
-      const { userDoc } = responseFromBackend.data
-      this.syncCurrentUser(userDoc);
-    })
-    .catch(err => console.log("Error while getting the user from the loggedin route ", err))
+    axios
+      .get("http://localhost:5000/auth/loggedin", { withCredentials: true })
+      .then(responseFromBackend => {
+        const { userDoc } = responseFromBackend.data;
+        this.syncCurrentUser(userDoc);
+      })
+      .catch(err =>
+        console.log(
+          "Error while getting the user from the loggedin route ",
+          err
+        )
+      );
   }
 
-  syncCurrentUser(user){
-    this.setState({ currentUser: user })
+  syncCurrentUser(user) {
+    this.setState({ currentUser: user });
   }
 
   file_upload_change = e => {
     const formData = new FormData();
     formData.append("imageUrl", e.target.files[0]);
-    if(!formData === ""){
+    if (!formData === "") {
       this.setState({
         selectedFile: formData
       });
@@ -64,87 +71,60 @@ class App extends Component {
 
   // MAKE A NEW POST
 
-  
-  postNewExp = async(e) => {
+  postNewExp = async e => {
     e.preventDefault();
-//UPLOAD TO CLOUDINARY
-if(this.state.imageFile !== []){
-const uploadData = new FormData();
-await uploadData.append("imageUrl", this.state.imageFile);
+    //UPLOAD TO CLOUDINARY
+    if (this.state.imageFile !== []) {
+      const uploadData = new FormData();
+      await uploadData.append("imageUrl", this.state.imageFile);
 
- service.handleUpload(uploadData)
-.then(response => {
-    console.log('response is: ', response);
-    // after the console.log we can see that response carries 'secure_url' which we can use to update the state 
-    this.setState({imagePost: response.imageUrl }, () => {
-
- //CALL TO THE NEW POST ROUTE
- axios.post('http://localhost:5000/createNewPost', this.state, {withCredentials: true})
- .then(theData => {
-     console.log("NEW POST!")
-     console.log(theData)
-   //  this.setState({finished: true})
- })
- .catch(err => console.log(err));
-
-
-})
-      
-    })
-    .catch(err => {
-      console.log("Error while uploading the file: ", err);
-    });
-   
-  }
-}
-
-
-  //OLD WAY OF MAKE A NEW POST
-  // post_new_experience = async e => {
-  //   try{
-  //   e.preventDefault();
-  //   const { postImgUrl } = this.state;
-  //   const clone = [...this.state.images];
-  //   await axios.post(postImgUrl, this.state.selectedFile)
-  //   .then(response => {
-  //     clone.push(response.data);
-  //     this.setState({
-  //       images: clone
-  //     });
-  //   });
-  // }catch(err){
-  //   console.log(err)
-  // }  
-  // };
-
-  // END OF MAKE A NEW POST
-
+      service
+        .handleUpload(uploadData)
+        .then(response => {
+          console.log("response is: ", response);
+          // after the console.log we can see that response carries 'secure_url' which we can use to update the state
+          this.setState({ imagePost: response.imageUrl }, () => {
+            //CALL TO THE NEW POST ROUTE
+            axios
+              .post("http://localhost:5000/createNewPost", this.state, {
+                withCredentials: true
+              })
+              .then(theData => {
+                console.log("NEW POST!");
+                console.log(theData);
+                //  this.setState({finished: true})
+              })
+              .catch(err => console.log(err));
+          });
+        })
+        .catch(err => {
+          console.log("Error while uploading the file: ", err);
+        });
+    }
+  };
 
   renderImages = () => {
-    const {images} = this.state.images
+    const { images } = this.state.images;
     return images.map(image => {
       return (
         <div>
-        <div>
-        <ThreeMap 
-          key={image._id}
-          {...image}
-          url={image.imageUrl}
-        />
+          <div>
+            <ThreeMap key={image._id} {...image} url={image.imageUrl} />
+          </div>
+          <div>HELLO MY NAME IS JESUS </div>
         </div>
-        <div>HELLO MY NAME IS JESUS </div>
-        </div>
-      )
-    })
+      );
+    });
   };
 
   get_data_torender = async () => {
     try {
-      const {url} = this.state
-      await axios.get(url).then(response => {
-        console.log(response)
+      const { url, fullPostUrl } = this.state;
+      await axios.get(fullPostUrl).then(response => {
+        console.log(response);
         this.setState({
-          images: response.data
+          images: response.data,
+          clone: response.data
         });
       });
     } catch (err) {
@@ -153,119 +133,210 @@ await uploadData.append("imageUrl", this.state.imageFile);
   };
 
   //SIGN UP NEW USER
-  updateForm = (e) => {
-    console.log(e.currentTarget)
+  updateForm = e => {
+    console.log(e.currentTarget);
     this.setState({
       [e.currentTarget.name]: e.currentTarget.value
-    })
-  }
+    });
+  };
 
-  changeImgUrl = (e) => {
-this.setState({imageUrl: e})
-  }
+  changeImgUrl = e => {
+    this.setState({ imageUrl: e });
+  };
 
-  changeFile = (e) => {
-    console.log(e)
-    this.setState({imageFile: e})
-    console.log(typeof this.state.imageFile)
-  }
+  changeFile = e => {
+    console.log(e);
+    this.setState({ imageFile: e });
+    console.log(typeof this.state.imageFile);
+  };
 
-  makeNewUser = (e) => {
+  makeNewUser = e => {
     e.preventDefault();
-    if(this.state.imageFile){
-               //UPLOAD TO CLOUDINARY
-               const uploadData = new FormData();
-               uploadData.append("imageUrl", this.state.imageFile);
-       
-               service.handleUpload(uploadData)
-               .then(response => {
-                   console.log('response is: ', response);
-                   // after the console.log we can see that response carries 'secure_url' which we can use to update the state 
-                   this.setState({ imagePost: response.imageUrl }, () => {
-                    //CALL TO THE SIGNUP ROUTE
-                    axios.post('http://localhost:5000/auth/signup', this.state, {withCredentials: true})
-                    .then(theData => {
-                        console.log("NEW USER!")
-                        console.log(theData)
-                        this.setState({finished: true})
-                    })
-                    .catch(err => console.log(err));
+    if (this.state.imageFile) {
+      //UPLOAD TO CLOUDINARY
+      const uploadData = new FormData();
+      uploadData.append("imageUrl", this.state.imageFile);
 
+      service
+        .handleUpload(uploadData)
+        .then(response => {
+          console.log("response is: ", response);
+          // after the console.log we can see that response carries 'secure_url' which we can use to update the state
+          this.setState({ imagePost: response.imageUrl }, () => {
+            //CALL TO THE SIGNUP ROUTE
+            axios
+              .post("http://localhost:5000/auth/signup", this.state, {
+                withCredentials: true
+              })
+              .then(theData => {
+                console.log("NEW USER!");
+                console.log(theData);
+                this.setState({ finished: true });
+              })
+              .catch(err => console.log(err));
+          });
+        })
+        .catch(err => {
+          console.log("Error while uploading the file: ", err);
+        });
+    } else {
+      //CALL TO THE SIGNUP ROUTE
+      axios
+        .post("http://localhost:5000/auth/signup", this.state, {
+          withCredentials: true
+        })
+        .then(theData => {
+          console.log("NEW USER!");
+          console.log(theData);
+          this.setState({ finished: true });
+        })
+        .catch(err => console.log(err));
+    }
 
-                  })
-                  
-             }).catch(err => {
-              console.log("Error while uploading the file: ", err);
-            })   
-                }else{
-                   
-                   //CALL TO THE SIGNUP ROUTE
-                   axios.post('http://localhost:5000/auth/signup', this.state, {withCredentials: true})
-                   .then(theData => {
-                       console.log("NEW USER!")
-                       console.log(theData)
-                       this.setState({finished: true})
-                   })
-                   .catch(err => console.log(err));
-            
-                }
-
-                this.setState({
-                  username: "",
-                  email: "",
-                  password: "",
-                  imageUrl: "",
-                  imageFile: [],
-                })
-
-         
-}
-// END OF SIGN UP
-
-//LOGIN USER
-loginUser = (e) => {
-e.preventDefault();
-axios.post('http://localhost:5000/auth/login', this.state, {withCredentials: true})
-.then(responseFromServer => {
-    console.log(responseFromServer.data.userDoc)
-    const { userDoc } = responseFromServer.data;
-    this.syncCurrentUser(userDoc);
     this.setState({
       username: "",
-      password: ""
-    })
-  
-    alert("You are logged in.")
-    // return <Redirect to='/profile'/>
-})
-.catch(err => {
-    console.log(err)
-    // if(err.response.data) return this.setState({message: err.response.data.message})
-})
-}
+      email: "",
+      password: "",
+      imageUrl: "",
+      imageFile: []
+    });
+  };
+  // END OF SIGN UP
 
+  //LOGIN USER
+  loginUser = e => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:5000/auth/login", this.state, {
+        withCredentials: true
+      })
+      .then(responseFromServer => {
+        console.log(responseFromServer.data.userDoc);
+        const { userDoc } = responseFromServer.data;
+        this.syncCurrentUser(userDoc);
+        this.setState({
+          username: "",
+          password: ""
+        });
 
-// END OF LOGIN
+        alert("You are logged in.");
+        // return <Redirect to='/profile'/>
+      })
+      .catch(err => {
+        console.log(err);
+        // if(err.response.data) return this.setState({message: err.response.data.message})
+      });
+  };
 
+  handleLike = image => {
+    const images = [...this.state.images];
+    const index = images.indexOf(image);
+    images[index] = { ...images[index] };
+    images[index].liked = !images[index].liked;
+    this.setState({ images });
+  };
 
+  handleQuery = query => {
+    const { clone } = this.state;
+    let list = clone.filter(image => {
+      return image.tags.find(item => item.includes(query));
+    });
 
-  // {this.state.images && this.renderImages()}
+    this.setState({
+      query,
+      images: list
+    });
+  };
+
   render() {
-    console.log("My State")
+    console.log("My State");
     console.log(this.state);
-    console.log(typeof this.state.imageFile)
+    console.log(typeof this.state.imageFile);
     return (
       <div className="App">
         <div>
-          
-        <Switch>
-        <Route exact path="/theImg" render={(props) => <SinglePost {...props} myUrl={this.state.images} />}/>
-        <Route exact path="/newPost" render={(props) => <PostForm {...props} handleSubmit={this.postNewExp} changeFile={this.changeFile} changeUrl={this.changeImgUrl} onChangeValue={this.updateForm} formValues={this.state}/>}/>
-        <Route exact path="/signup" render={(props) => <Signup {...props} onChangeValue={this.updateForm} changeFile={this.changeFile} handleSubmit={this.makeNewUser} currentUser = {this.state.currentUser} onUserChange = { userDoc => this.syncCurrentUser(userDoc)} formValues={this.state}/>}></Route>
-        <Route exact path="/login" render={(props) => <Login {...props} onChangeValue={this.updateForm}  handleSubmit={this.loginUser} currentUser = {this.state.currentUser} formValues={this.state}/>}></Route>
-        <Route exact path="/profile" render={(props) => <Profile {...props} currentUser = {this.state.currentUser}/>}/>
-        </Switch>
-        
+          <Switch>
+            <Route
+              exact
+              path="/theImg"
+              render={props => (
+                <SinglePost {...props} myUrl={this.state.images} />
+              )}
+            />
+            <Route
+              exact
+              path="/newPost"
+              render={props => (
+                <PostForm
+                  {...props}
+                  handleSubmit={this.postNewExp}
+                  changeFile={this.changeFile}
+                  changeUrl={this.changeImgUrl}
+                  onChangeValue={this.updateForm}
+                  formValues={this.state}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/signup"
+              render={props => (
+                <Signup
+                  {...props}
+                  onChangeValue={this.updateForm}
+                  changeFile={this.changeFile}
+                  handleSubmit={this.makeNewUser}
+                  currentUser={this.state.currentUser}
+                  onUserChange={userDoc => this.syncCurrentUser(userDoc)}
+                  formValues={this.state}
+                />
+              )}
+            ></Route>
+            <Route
+              exact
+              path="/login"
+              render={props => (
+                <Login
+                  {...props}
+                  onChangeValue={this.updateForm}
+                  handleSubmit={this.loginUser}
+                  currentUser={this.state.currentUser}
+                  formValues={this.state}
+                />
+              )}
+            ></Route>
+            <Route
+              exact
+              path="/profile"
+              render={props => (
+                <Profile {...props} currentUser={this.state.currentUser} />
+              )}
+            />
+            <Route
+              exact
+              path="/images"
+              render={props => <List {...props} images={this.state.images} />}
+            />
+            <Route
+              exact
+              path="/public"
+              render={props => (
+                <Card
+                  {...props}
+                  searchTerm={this.state.query}
+                  onQuery={this.handleQuery}
+                  images={this.state.images}
+                  onLike={this.handleLike}
+                />
+              )}
+            />
+
+            <Route
+              exact
+              path={"/post/:id"}
+              render={props => <Single {...props} images={this.state.images} />}
+            />
+          </Switch>
         </div>
       </div>
     );
