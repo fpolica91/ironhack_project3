@@ -3,7 +3,7 @@ import ThreeMap from './ThreeMap';
 
 const List = (props) => {
    const {images} = props
-   console.log(images)
+ 
     return ( 
       <div>
           {images && props.images.map(image => {
@@ -11,9 +11,9 @@ const List = (props) => {
             <div>
             <ThreeMap key={image._id} {...image} url={image.image}/>
             </div>
-
             )
           })}
+          {!images && window.location.reload()}
       </div>
      );
 }

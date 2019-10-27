@@ -20,7 +20,11 @@ const Card = (props) => {
             <div className="card" key={images._id} >
            <iframe className="card-img-top" src={images.image}/>
             <div className="card-body">
-                <h6 className="card-title">{images.owner}</h6>
+                
+                <h6 className="card-title">{images.owner.username}</h6>
+                <Link to={`/profile/${images.owner._id}`}> Profile </Link>
+                
+               
                 <p className="card-text"> {images.caption} </p>
              <Link to={`post/${images._id}`}>View Experience</Link>
              </div>

@@ -15,6 +15,8 @@ import service from "./api/service";
 import List from "./Components/post.list";
 import Card from "./Components/cards";
 import Single from "./Components/common/single";
+import NavBar from "./Components/common/navBar";
+import UserProfile from "./Components/common/user.profile";
 
 class App extends Component {
   state = {
@@ -74,33 +76,31 @@ class App extends Component {
   postNewExp = async e => {
     e.preventDefault();
     //UPLOAD TO CLOUDINARY
-    if (this.state.imageFile !== []) {
-      const uploadData = new FormData();
-      await uploadData.append("imageUrl", this.state.imageFile);
-
-      service
-        .handleUpload(uploadData)
-        .then(response => {
-          console.log("response is: ", response);
-          // after the console.log we can see that response carries 'secure_url' which we can use to update the state
-          this.setState({ imagePost: response.imageUrl }, () => {
-            //CALL TO THE NEW POST ROUTE
-            axios
-              .post("http://localhost:5000/createNewPost", this.state, {
-                withCredentials: true
-              })
-              .then(theData => {
-                console.log("NEW POST!");
-                console.log(theData);
-                //  this.setState({finished: true})
-              })
-              .catch(err => console.log(err));
-          });
-        })
-        .catch(err => {
-          console.log("Error while uploading the file: ", err);
+    // if (this.state.imageFile !== []) {
+    const uploadData = new FormData();
+    await uploadData.append("imageUrl", this.state.imageFile);
+    service
+      .handleUpload(uploadData)
+      .then(response => {
+        this.setState({ imagePost: response.imageUrl }, () => {
+          axios
+            .post("http://localhost:5000/createNewPost", this.state, {
+              withCredentials: true
+            })
+            .then(response => {
+              const clone = [...this.state.images];
+              clone.push(response.data);
+              this.setState({
+                images: clone
+              });
+            })
+            .catch(err => console.log(err));
         });
-    }
+      })
+      .catch(err => {
+        console.log("Error while uploading the file: ", err);
+      });
+    // }
   };
 
   renderImages = () => {
@@ -119,9 +119,8 @@ class App extends Component {
 
   get_data_torender = async () => {
     try {
-      const { url, fullPostUrl } = this.state;
+      const { fullPostUrl } = this.state;
       await axios.get(fullPostUrl).then(response => {
-        console.log(response);
         this.setState({
           images: response.data,
           clone: response.data
@@ -132,7 +131,6 @@ class App extends Component {
     }
   };
 
-  //SIGN UP NEW USER
   updateForm = e => {
     console.log(e.currentTarget);
     this.setState({
@@ -145,9 +143,7 @@ class App extends Component {
   };
 
   changeFile = e => {
-    console.log(e);
     this.setState({ imageFile: e });
-    console.log(typeof this.state.imageFile);
   };
 
   makeNewUser = e => {
@@ -249,12 +245,11 @@ class App extends Component {
   };
 
   render() {
-    console.log("My State");
-    console.log(this.state);
-    console.log(typeof this.state.imageFile);
     return (
       <div className="App">
         <div>
+          <NavBar />
+
           <Switch>
             <Route
               exact
@@ -336,12 +331,19 @@ class App extends Component {
               path={"/post/:id"}
               render={props => <Single {...props} images={this.state.images} />}
             />
+
+            <Route
+              exact
+              path={"/profile/:id"}
+              render={props => (
+                <UserProfile {...props} images={this.state.images} />
+              )}
+            />
           </Switch>
         </div>
       </div>
     );
   }
 }
-//<Route exact path="/">{this.state.images && this.renderImages()}</Route>
 
 export default App;

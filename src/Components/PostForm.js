@@ -1,5 +1,4 @@
 import React from 'react';
-import ThreeMap from './ThreeMap';
 
 class PostForm extends React.Component{
 
@@ -69,7 +68,7 @@ console.log(e.target);
         e.preventDefault();
 
         console.log(e.target.files);
-        if(e.target.files[0]){
+        if(e.target.files[0] && e.target.files[0].size <= 10485760 ){
         let newImg = URL.createObjectURL(e.target.files[0])
         this.props.changeFile(e.target.files[0])
         this.props.changeUrl(newImg)

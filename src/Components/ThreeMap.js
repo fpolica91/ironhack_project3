@@ -7,9 +7,6 @@ import Orbitcontrols from "three-orbitcontrols";
 
 
 class ThreeMap extends Component {
-  // state = {
-  //   picture: ""
-  // };
 
   async componentDidMount() {
 	await this.getData()
