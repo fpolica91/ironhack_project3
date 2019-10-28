@@ -8,15 +8,18 @@ class Signup extends React.Component{
 
  
      finished = false;
+     
 
 
     seePreview = (e) => {
         e.preventDefault();
         console.log(e.target.files[0]);
+        const {files} = e.target
+        if(files[0].size <= 10485760){
         let newImg = URL.createObjectURL(e.target.files[0])
         img = newImg;
         this.props.changeFile(e.target.files[0])
-        // this.setState({imageFile: e.target.files[0]})
+        }
 
     }
 
@@ -32,7 +35,7 @@ class Signup extends React.Component{
         return(
             <section>
             <h2>Sign Up</h2>
-            <form onSubmit={this.props.handleSubmit}>
+            <form onSubmit={(e) => this.props.handleSubmit(e)}>
             <label>Username: </label>
             <input type="text" name="username" value={username} onChange={ e => this.props.onChangeValue(e)}></input>
             <label>Email: </label>

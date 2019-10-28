@@ -1,11 +1,15 @@
 import React, { Component } from "react";
-import { Switch, Link, Route } from "react-router-dom";
+import { Switch, Link, Route, Redirect } from "react-router-dom";
 import ThreeMap from "./Components/ThreeMap";
 import SinglePost from "./Components/SinglePost";
 import PostForm from "./Components/PostForm";
 import Signup from "./Components/user-pages/Signup";
 import Login from "./Components/user-pages/Login";
 import Profile from "./Components/Profile";
+
+
+
+
 
 import "./index.css";
 import axios from "axios";
@@ -37,25 +41,46 @@ class App extends Component {
     images: [],
     clone: [],
     selectedFile: null,
-    message: ""
+    message: "",
+    errorMessage :""
   };
 
   async componentDidMount() {
     await this.get_data_torender();
-
-    axios
-      .get("http://localhost:5000/auth/loggedin", { withCredentials: true })
-      .then(responseFromBackend => {
-        const { userDoc } = responseFromBackend.data;
-        this.syncCurrentUser(userDoc);
-      })
-      .catch(err =>
-        console.log(
-          "Error while getting the user from the loggedin route ",
-          err
-        )
-      );
+    await this.checkedLoggedIn()
+   
   }
+
+  
+
+  // logged in users!
+  checkedLoggedIn = async() =>{
+    axios
+    .get("http://localhost:5000/auth/loggedin", { withCredentials: true })
+    .then(responseFromBackend => {
+      const { userDoc } = responseFromBackend.data;
+      this.syncCurrentUser(userDoc);
+    })
+    .catch(err =>
+     this.setState({errorMessage: err.response.data.message})
+    );
+  }
+
+  logoutUsers =() =>{
+    const {newPostUrl} = this.state
+    axios.post(`${newPostUrl}/auth/logout`, {withCredentials: true })
+    .then(() =>{
+      this.setState({
+        currentUser: null
+      })
+      this.syncCurrentUser(null)
+    })
+  }
+
+  redirect = () =>{
+    return <Redirect to="/public"/>
+  }
+
 
   syncCurrentUser(user) {
     this.setState({ currentUser: user });
@@ -75,8 +100,6 @@ class App extends Component {
 
   postNewExp = async e => {
     e.preventDefault();
-    //UPLOAD TO CLOUDINARY
-    // if (this.state.imageFile !== []) {
     const uploadData = new FormData();
     await uploadData.append("imageUrl", this.state.imageFile);
     service
@@ -92,7 +115,7 @@ class App extends Component {
               clone.push(response.data);
               this.setState({
                 images: clone
-              });
+              })
             })
             .catch(err => console.log(err));
         });
@@ -100,7 +123,8 @@ class App extends Component {
       .catch(err => {
         console.log("Error while uploading the file: ", err);
       });
-    // }
+    
+      
   };
 
   renderImages = () => {
@@ -167,7 +191,14 @@ class App extends Component {
               .then(theData => {
                 console.log("NEW USER!");
                 console.log(theData);
-                this.setState({ finished: true });
+                this.setState({
+                  finished: true,
+                  username: "",
+                  email: "",
+                  password: "",
+                  imageUrl: "",
+                  imageFile: []
+                });
               })
               .catch(err => console.log(err));
           });
@@ -184,26 +215,22 @@ class App extends Component {
         .then(theData => {
           console.log("NEW USER!");
           console.log(theData);
-          this.setState({ finished: true });
+          this.setState({
+            finished: true,
+            username: "",
+            email: "",
+            password: "",
+            imageUrl: "",
+            imageFile: []
+          });
         })
         .catch(err => console.log(err));
     }
-
-    this.setState({
-      username: "",
-      email: "",
-      password: "",
-      imageUrl: "",
-      imageFile: []
-    });
   };
-  // END OF SIGN UP
 
-  //LOGIN USER
   loginUser = e => {
     e.preventDefault();
-    axios
-      .post("http://localhost:5000/auth/login", this.state, {
+    axios.post("http://localhost:5000/auth/login", this.state, {
         withCredentials: true
       })
       .then(responseFromServer => {
@@ -216,19 +243,35 @@ class App extends Component {
         });
 
         alert("You are logged in.");
-        // return <Redirect to='/profile'/>
+        return <Redirect to='/profile'/>
       })
       .catch(err => {
         console.log(err);
-        // if(err.response.data) return this.setState({message: err.response.data.message})
+        if(err.response.data) this.setState({errorMessage: err.response.data.message})
       });
   };
 
   handleLike = image => {
+    const {newPostUrl} = this.state
+    console.log(image._id)
+    const {currentUser} = this.state
+    axios.post(`${newPostUrl}/update/${image._id}`,{
+      currentUser
+    })
+    // .then(response => {
+    //   const index  = images.indexOf(image).disabled 
+    //   images[index] = {...images[index]}
+    //   images[index].disabled = !images[index].disabled
+    //   // images.push(response.data)
+    //   this.setState({
+    //     images, 
+    //   })
+    // })
+
     const images = [...this.state.images];
     const index = images.indexOf(image);
-    images[index] = { ...images[index] };
-    images[index].liked = !images[index].liked;
+    images[index] = {...images[index]}
+    images[index].disabled = !images[index].disabled;
     this.setState({ images });
   };
 
@@ -245,6 +288,7 @@ class App extends Component {
   };
 
   render() {
+  
     return (
       <div className="App">
         <div>
@@ -261,7 +305,9 @@ class App extends Component {
             <Route
               exact
               path="/newPost"
+
               render={props => (
+                 this.state.currentUser?
                 <PostForm
                   {...props}
                   handleSubmit={this.postNewExp}
@@ -269,7 +315,8 @@ class App extends Component {
                   changeUrl={this.changeImgUrl}
                   onChangeValue={this.updateForm}
                   formValues={this.state}
-                />
+                /> :
+                <Redirect to="/login"/>
               )}
             />
             <Route
@@ -304,7 +351,9 @@ class App extends Component {
               exact
               path="/profile"
               render={props => (
+                this.state.currentUser?
                 <Profile {...props} currentUser={this.state.currentUser} />
+                : <Redirect to="/login"/>
               )}
             />
             <Route
@@ -322,6 +371,7 @@ class App extends Component {
                   onQuery={this.handleQuery}
                   images={this.state.images}
                   onLike={this.handleLike}
+                  
                 />
               )}
             />
@@ -329,14 +379,24 @@ class App extends Component {
             <Route
               exact
               path={"/post/:id"}
-              render={props => <Single {...props} images={this.state.images} />}
+              render={props => 
+              
+              <Single {...props} images={this.state.images} />
+             
+              }
             />
 
             <Route
               exact
               path={"/profile/:id"}
               render={props => (
-                <UserProfile {...props} images={this.state.images} />
+                <UserProfile 
+                {...props}
+                 images={this.state.images} 
+                 onLogout={this.logoutUsers}
+                 currentUser={this.state.currentUser}
+                 />
+                 
               )}
             />
           </Switch>

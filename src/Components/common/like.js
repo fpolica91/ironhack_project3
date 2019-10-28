@@ -1,20 +1,24 @@
 import React from "react";
 
-const Like = props => {
-   if(props) {
-       console.log(props.liked)
-   }
-  let classes = "fa fa-heart";
-  if(!props.liked) classes+="-o"
+const Button = props => {
+  
+  const {disabled} = props
+  
+  // let classes;
+  // if(props.disabled) classes ="disabled"
 
   return (
-    <i
+    <button
       onClick={props.onLike}
       style={{ cursor: "pointer" }}
-      className={classes}
+      className="btn btn-success"
       aria-hidden="true"
-    />
+      disabled={props.disabled} 
+    >
+      Like
+
+    </button>
   );
 };
 
-export default Like;
+export default Button;

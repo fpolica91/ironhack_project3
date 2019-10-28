@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect} from 'react-router-dom'
 
 class PostForm extends React.Component{
 
@@ -115,8 +116,17 @@ console.log(e.target);
     })
     }
 
+    renderRedirect = async  () =>{
+        
+        return (
+
+            <Redirect to="/login"/>
+        )
+    }
+
     render(){
-        const {caption, tags} = this.props.formValues
+        const {caption, tags, currentUser} = this.props.formValues
+        if(currentUser){
         return(
             <div className="formPost">
             <h1>New Post</h1>
@@ -137,7 +147,8 @@ console.log(e.target);
             </div>
            
             <textarea style={this.textAreaStyle} type="text" value={caption} onChange={ e => this.props.onChangeValue(e)} name="caption" placeholder="write a caption..."></textarea>
-            <button style={this.createButton}>CREATE NEW EXPERIENCE</button>
+            <button
+             style={this.createButton} > CREATE NEW EXPERIENCE</button>
             </form>
 
             <div>
@@ -145,6 +156,13 @@ console.log(e.target);
             </div>
             </div>
         )
+        } else {
+            return (
+            <div>
+            {<p>login</p>  && this.renderRedirect()}
+            </div>
+            )
+        }
     }
 
 }
