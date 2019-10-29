@@ -2,51 +2,65 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Button from "./common/like";
 import SearchBar from "./common/searchBar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Card = props => {
   const { images } = props;
+  // const notify = () => toast.error(props.errorMessage);
   return (
-    <div className="container">
+    <React.Fragment>
       <SearchBar onSearch={props.onQuery} searchTerm={props.searchTerm} />
+      <div className="worldContainer" >
 
-      {images &&
-        props.images.map(images => {
-          if (images._id) {
-            return (
-              <div>
-                <div className="card" key={images._id}>
-                  <iframe className="card-img-top" src={images.image} />
-                  <div className="card-body">
-                    <h6 className="card-title">{images.owner.username}</h6>
-                    <Link to={`/profile/${images.owner._id}`}> Profile </Link>
 
-                    <p className="card-text"> {images.caption} </p>
-                    <Link to={`post/${images._id}`}>View Experience</Link>
+        {/* {props.errorMessage && <ToastContainer>{notify()}</ToastContainer>} */}
+
+        {images &&
+          props.images.map(images => {
+            if (images._id) {
+              return (
+                <div className="col col-s-12 worldPost" key={images._id} >
+                  <div>
+                    <img src={images.owner.imageUrl} width="50px" height="50px" alt="miniProfilePic"></img>
+
+                    {images.owner.username}
                   </div>
 
-                  {images &&
-                    images.tags.map(tag => {
-                      return tag.split(" ").map(item => {
-                        return <li>{item}</li>;
-                      });
-                    })}
+                  <div className="worldImgContainer">
+                    <img className="worldImg" src={images.image} alt="worldPic" width="100%" height="300px"></img>
+
+                    <Link to={`/post/${images._id}`}> <div className="overlayContainer" >
+                      <div className="textOverlay" id={images._id}>See the full Post</div>
+                    </div>
+                    </Link>
+                  </div>
+                  <p>{images.caption}</p>
+
+                  <div className="like-button">
+                    <Button
+                      disabled={images.disabled}
+                      style={{ cursor: "pointer" }}
+                      className="btn btn-success"
+                      aria-hidden="true"
+                      onLike={() => props.onLike(images)}
+                    />
+
+                    <p>{`${images.likes.length} likes`}</p>
+
+
+                  </div>
+
                 </div>
-                <Button
-                  disabled={images.disabled}
-                  style={{ cursor: "pointer" }}
-                  className="btn btn-success"
-                  aria-hidden="true"
-                  onLike={() => props.onLike(images)}
-                />
-                  
-            
-              </div>
-            );
-          } else {
-            window.location.reload();
-          }
-        })}
-    </div>
+              )
+            } else {
+              window.location.reload();
+            }
+          })}
+
+
+      </div>
+    </React.Fragment>
   );
 };
 

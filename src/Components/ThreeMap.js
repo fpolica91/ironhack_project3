@@ -1,35 +1,26 @@
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import "../App.css";
 import React, { Component } from "react";
 import * as THREE from "three";
 import Orbitcontrols from "three-orbitcontrols";
 
-
-
 class ThreeMap extends Component {
-
   async componentDidMount() {
-	await this.getData()
-	.then(()=>{
-       this.initThree()
-	})
+    await this.getData().then(() => {
+      this.initThree();
+    });
   }
 
   // GETS DATA FROM STATE
   getData = async () => {
-    const {url} = this.props
-    if(url){
-  
+    const { url } = this.props;
+    if (url) {
     }
-    return url
+    return url;
   };
-  
-
-
-
 
   initThree() {
-    const {url} = this.props
+    const { url } = this.props;
     let stats;
     let camera, scene, renderer;
     let group;
@@ -37,9 +28,7 @@ class ThreeMap extends Component {
     let width = container.clientWidth,
       height = container.clientHeight;
 
-   
     init();
-    
 
     animate();
 
@@ -56,7 +45,10 @@ class ThreeMap extends Component {
       // camera.lookAt( scene.position );
 
       //控制地球
-      let orbitControls = new /*THREE.OrbitControls*/ Orbitcontrols(camera, container);
+      let orbitControls = new /*THREE.OrbitControls*/ Orbitcontrols(
+        camera,
+        container
+      );
       orbitControls.autoRotate = false;
       // let clock = new THREE.Clock();
       //光源
@@ -70,8 +62,7 @@ class ThreeMap extends Component {
       scene.add(spotLight);
       // Texture
       let loader = new THREE.TextureLoader();
-      
-   
+
       loader.load(url, function(texture) {
         // let geometry = new THREE.SphereGeometry( 200, 20, 20 );
         let geometry = new THREE.SphereGeometry(500, 60, Math.pi * 2);
@@ -80,7 +71,7 @@ class ThreeMap extends Component {
         let mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
       });
-    
+
       renderer = new THREE.WebGLRenderer();
       renderer.setClearColor(0xffffff);
       renderer.setPixelRatio(window.devicePixelRatio);
@@ -96,27 +87,20 @@ class ThreeMap extends Component {
       // stats.update();
     }
     function render() {
-      renderer.render(scene, camera); 
+      renderer.render(scene, camera);
     }
   }
   render() {
     return (
-    
-    <div 
-    style={{
-      height: this.props.height,
-      width: this.props.width,
-    }}
-    >  
-
-        <div
-          id="WebGL-output"
-        />
-         
-        
-
-        </div>
-       
+      <div>
+      <div
+        style={{
+          height: this.props.height,
+          width: this.props.width
+        }}
+        id="WebGL-output"
+      />
+      </div>
     );
   }
 }

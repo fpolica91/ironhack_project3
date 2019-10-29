@@ -16,7 +16,6 @@ const Button = props => {
       disabled={props.disabled} 
     >
       Like
-
     </button>
   );
 };
