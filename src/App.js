@@ -17,10 +17,12 @@ import Card from "./Components/cards";
 import Single from "./Components/common/single";
 import NavBar from "./Components/common/navBar";
 import UserProfile from "./Components/common/user.profile";
+import PublicProfile from "./Components/common/user.public.profile";
 
 class App extends Component {
   state = {
     currentUser: null,
+    users: [],
     username: "",
     email: "",
     password: "",
@@ -29,6 +31,7 @@ class App extends Component {
     caption: "",
     tags: "",
     query: "",
+    showConfirm: false,
     // imageFile: [],
     url: "http://localhost:5000/api/things",
     fullPostUrl: "http://localhost:5000/createNewPost",
@@ -145,6 +148,13 @@ class App extends Component {
     } catch (err) {
       console.log(err);
     }
+    const { newPostUrl } = this.state
+    axios.get(`${newPostUrl}/auth/users`)
+      .then(response => {
+        this.setState({
+          users: response.data
+        })
+      })
   };
 
   updateForm = e => {
@@ -247,28 +257,35 @@ class App extends Component {
 
   handleLike = image => {
     const { newPostUrl } = this.state;
-    console.log(image._id);
+
     const { currentUser } = this.state;
+    const user = { ...this.state.currentUser }
+
     axios
       .post(`${newPostUrl}/update/${image._id}`, { currentUser })
       .then(response => {
+        console.log(response.data.likes)
         const img = [...this.state.images];
         const index = img.indexOf(image);
-        img[index] = { ...img[index] };
-        img[index] = response.data;
+        img[index] = { ...img[index] }
+        img[index].likes = response.data.likes
+        // const owner = img[index].owner
+
+        // img[index] = { ...response.data };
+        // img[index] = response.data;
+
         img[index].disabled = !img[index].disabled;
         this.setState({
-          images: img
+          images: img,
+          currentUser: user
         });
       })
       .catch(err => {
         if (err) {
           console.log(err)
-          // this.setState({
-          // errorMessage: err.message
-          // });
         }
       });
+
   };
 
   handleQuery = query => {
@@ -283,11 +300,45 @@ class App extends Component {
     });
   };
 
+  handleDelete = imageId => {
+    const { newPostUrl } = this.state
+    const { currentUser } = this.state
+    const clone = [...this.state.images]
+    let image = clone.findIndex(img => img._id === imageId)
+    clone.splice(image, 1)
+    this.setState({
+      images: clone
+    })
+    axios.post(`${newPostUrl}/delete/${imageId}`, { currentUser })
+      .then(response => response.data)
+      .catch(err => console.log(err))
+  }
+
+  confirmDelete = e => {
+    this.setState({
+      showConfirm: true
+    })
+  }
+
+  cancelDelete = e => {
+    this.setState({
+      showConfirm: false
+    })
+  }
+
+  handleFollow = (user) => {
+    const { newPostUrl } = this.state
+    const { currentUser } = this.state
+    axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
+      .then(response => console.log(response.data))
+  }
+
+
   render() {
     return (
       <div className="App">
         <div>
-          <NavBar currentUser={this.state.currentUser} />
+          <NavBar currentUser={this.state.currentUser} images={this.state.images} />
 
           <Switch>
             <Route
@@ -359,14 +410,16 @@ class App extends Component {
                 this.state.currentUser ? (
                   <Card
                     {...props}
-                    // errorMessage={this.state.errorMessage}
+                    users={this.state.users}
+                    currentUser={this.state.currentUser}
                     searchTerm={this.state.query}
                     onQuery={this.handleQuery}
                     images={this.state.images}
                     onLike={this.handleLike}
                   />
                 ) : (
-                    <Redirect to="/login" />
+                    console.log('broken')
+                    // <Redirect to="/login" />    if you use redirect it breaks do not use redirect//
                   )
               }
             />
@@ -390,14 +443,33 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
+                    confirmDelete={this.confirmDelete}
+                    showConfirm={this.state.showConfirm}
                     images={this.state.images}
                     onLogout={this.logoutUsers}
                     currentUser={this.state.currentUser}
+                    onDelete={this.handleDelete}
+                    cancelDelete={this.cancelDelete}
                   />
                 ) : (
                     <Redirect to="/login" />
                   )
               }
+            />
+
+
+
+            <Route
+              exact
+              path=
+              {"/public/profile/:id"}
+              render={props =>
+                <PublicProfile
+                  {...props}
+                  handleFollow={this.handleFollow}
+                  users={this.state.users}
+                  images={this.state.images}
+                />}
             />
           </Switch>
         </div>

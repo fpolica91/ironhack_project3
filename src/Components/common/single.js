@@ -4,7 +4,7 @@ import ThreeMap from "../ThreeMap";
 let height = "70vh";
 let width = "100vw";
 
-var requestFullscreen = function(ele) {
+var requestFullscreen = function (ele) {
   if (ele.requestFullscreen) {
     ele.requestFullscreen();
   } else if (ele.webkitRequestFullscreen) {
@@ -18,7 +18,7 @@ var requestFullscreen = function(ele) {
   }
 };
 
-var exitFullscreen = function() {
+var exitFullscreen = function () {
   let theCanvas = document.getElementsByTagName("canvas")[0];
   if (theCanvas.style.height === "100vh") {
     theCanvas.style.height = "70vh";
@@ -33,7 +33,7 @@ window.addEventListener("mozfullscreenchange", exitFullscreen);
 window.addEventListener("MSFullscreenChange", exitFullscreen);
 
 const Single = props => {
- 
+
 
   const fullScreen = e => {
     e.preventDefault();
@@ -52,7 +52,7 @@ const Single = props => {
             .map(image => {
               return (
                 <div className="singlePost">
-                  <div></div>
+                  {/* // <div></div> */}
                   <ThreeMap
                     height={height}
                     width={width}
@@ -60,17 +60,17 @@ const Single = props => {
                     {...image}
                     url={image.image}
                   />
-                  <div>{}</div>
+                  {/* // <div>{}</div> */}
                   <button onClick={fullScreen}>Go Full Screen</button>
-              </div>
+                </div>
               )
             })}
-        
+
       </React.Fragment>
     );
   }
-  
-   else {
+
+  else {
     return <p>...loading</p>;
   }
 };

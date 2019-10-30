@@ -5,26 +5,27 @@ import SearchBar from "./common/searchBar";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const Card = props => {
   const { images } = props;
-  // const notify = () => toast.error(props.errorMessage);
+  const { users } = props
+
+  // const notify = () => toast.error(props.errorMessage); 
   return (
     <React.Fragment>
       <SearchBar onSearch={props.onQuery} searchTerm={props.searchTerm} />
       <div className="worldContainer" >
-
-
-        {/* {props.errorMessage && <ToastContainer>{notify()}</ToastContainer>} */}
-
         {images &&
-          props.images.map(images => {
-            if (images._id) {
+          images.map(images => {
+            if (images._id && images.owner) {
               return (
                 <div className="col col-s-12 worldPost" key={images._id} >
                   <div>
-                    <img src={images.owner.imageUrl} width="50px" height="50px" alt="miniProfilePic"></img>
 
-                    {images.owner.username}
+                    {images.owner && <img src={images.owner.imageUrl} width="50px" height="50px" alt="miniProfilePic" />}
+
+                    <Link to={`/public/profile/${images.owner._id}`}>{images.owner.username} </Link>
+
                   </div>
 
                   <div className="worldImgContainer">
@@ -50,6 +51,12 @@ const Card = props => {
 
 
                   </div>
+                  {images && images.tags.map(tag => {
+                    return tag.split(' ').map(item => {
+                      return (<li>{item}</li>)
+                    })
+
+                  })}
 
                 </div>
               )
