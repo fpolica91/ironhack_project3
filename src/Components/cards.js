@@ -7,8 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 const Card = props => {
-  const { images } = props;
-  const { users } = props
+  const { images, users, currentUser } = props;
+
 
   // const notify = () => toast.error(props.errorMessage); 
   return (
@@ -24,7 +24,9 @@ const Card = props => {
 
                     {images.owner && <img src={images.owner.imageUrl} width="50px" height="50px" alt="miniProfilePic" />}
 
-                    <Link to={`/public/profile/${images.owner._id}`}>{images.owner.username} </Link>
+                    {currentUser._id !== images.owner._id ? <Link to={`/public/profile/${images.owner._id}`}>{images.owner.username} </Link> : <p> <Link to={`/profile/${currentUser._id}`}>{currentUser.username} </Link>  </p>}
+
+
 
                   </div>
 
