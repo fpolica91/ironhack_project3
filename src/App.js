@@ -267,7 +267,9 @@ class App extends Component {
         console.log(response.data.likes)
         const img = [...this.state.images];
         const index = img.indexOf(image);
+
         img[index] = { ...img[index] }
+        console.log(img[index])
         img[index].likes = response.data.likes
         img[index].disabled = !img[index].disabled;
         this.setState({
@@ -322,15 +324,17 @@ class App extends Component {
   }
 
   handleFollow = (e, user) => {
-    e.preventDefault()
     const { newPostUrl } = this.state
     const { currentUser } = this.state
     axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
       .then(response => {
         const users = [...this.state.users]
-        const index = users.indexOf(user)
-        users[user] = { ...users[user] }
-        users[user].followers = response.data.followers
+        const ind = users.findIndex(us => us._id === currentUser._id)
+        const index = users.findIndex(us => us._id === user)
+        users[index] = { ...users[index] }
+        users[ind] = { ...users[ind] }
+        users[index].followers = response.data.followers
+        users[ind].following = response.data.following
         this.setState({
           users
         })
