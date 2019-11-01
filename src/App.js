@@ -109,6 +109,7 @@ class App extends Component {
             })
             .then(response => {
               const clone = [...this.state.images];
+              console.log(response.data)
               clone.push(response.data);
               this.setState({
                 images: clone
@@ -257,17 +258,14 @@ class App extends Component {
 
   handleLike = image => {
     const { newPostUrl } = this.state;
-
     const { currentUser } = this.state;
     const user = { ...this.state.currentUser }
-
     axios
       .post(`${newPostUrl}/update/${image._id}`, { currentUser })
       .then(response => {
         console.log(response.data.likes)
         const img = [...this.state.images];
         const index = img.indexOf(image);
-
         img[index] = { ...img[index] }
         console.log(img[index])
         img[index].likes = response.data.likes
@@ -286,15 +284,25 @@ class App extends Component {
   };
 
   handleQuery = query => {
+
     const { clone } = this.state;
     let list = clone.filter(image => {
       return image.tags.find(item => item.includes(query));
     });
+    console.log(list)
 
-    this.setState({
-      query,
-      images: list
-    });
+    if (query) {
+      this.setState({
+        query,
+        images: list,
+      });
+    } else {
+      this.setState({
+        images: clone,
+        query
+      })
+    }
+
   };
 
   handleDelete = imageId => {
