@@ -344,8 +344,26 @@ class App extends Component {
   submitUpdate = (e, image) => {
     e.preventDefault()
     const { newPostUrl, caption, tags } = this.state
-    console.log(image._id)
-    axios.put(`${newPostUrl}/updatePost/${image._id}`, { caption, tags })
+    const images = [...this.state.images]
+    const index = images.indexOf(image)
+    images[index] = { ...images[index] }
+    images[index].tags = []
+    images[index].tags.push(tags)
+
+    images[index].caption = caption
+    images[index].modal = false
+    this.setState({
+      images,
+      caption: "",
+      tags: ""
+    })
+
+
+    axios.put(`${newPostUrl}/updatePost/${image._id}`, { tags, caption })
+
+
+
+
   }
 
   handleFollow = (e, user) => {

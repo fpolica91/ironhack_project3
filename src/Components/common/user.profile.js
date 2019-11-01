@@ -47,7 +47,7 @@ const UserProfile = (props) => {
                                 </div>
                                 <div>
                                     <p>{pic.caption}</p>
-                                    {pic.tags.map(tag => {
+                                    {pic.tags && pic.tags.map(tag => {
                                         return tag.split(' ').map(item => {
                                             return (<li>{item}</li>)
                                         })
