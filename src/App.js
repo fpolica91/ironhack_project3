@@ -19,6 +19,7 @@ import NavBar from "./Components/common/navBar";
 import UserProfile from "./Components/common/user.profile";
 import PublicProfile from "./Components/common/user.public.profile";
 
+
 class App extends Component {
   state = {
     currentUser: null,
@@ -41,7 +42,6 @@ class App extends Component {
     clone: [],
     selectedFile: null,
     message: "",
-    // errorMessage: ""
   };
 
   async componentDidMount() {
@@ -302,7 +302,6 @@ class App extends Component {
         query
       })
     }
-
   };
 
   handleDelete = imageId => {
@@ -331,11 +330,30 @@ class App extends Component {
     })
   }
 
+  showModal = pic => {
+    const images = [...this.state.images]
+    const index = images.indexOf(pic)
+    images[index] = { ...images[index] }
+    images[index].modal = !images[index].modal
+    console.log(images[index])
+    this.setState({
+      images
+    })
+  }
+
+  submitUpdate = (e, image) => {
+    e.preventDefault()
+    const { newPostUrl, caption, tags } = this.state
+    console.log(image._id)
+    axios.put(`${newPostUrl}/updatePost/${image._id}`, { caption, tags })
+  }
+
   handleFollow = (e, user) => {
     const { newPostUrl } = this.state
     const { currentUser } = this.state
     axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
       .then(response => {
+        console.log(response.data.message)
         const users = [...this.state.users]
         const ind = users.findIndex(us => us._id === currentUser._id)
         const index = users.findIndex(us => us._id === user)
@@ -344,11 +362,14 @@ class App extends Component {
         users[index].followers = response.data.followers
         users[ind].following = response.data.following
         this.setState({
-          users
+          users,
+          message: response.data.message
         })
       })
       .catch(err => console.log(err))
   }
+
+
 
 
   render() {
@@ -460,7 +481,12 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
+                    caption={this.state.caption}
+                    tags={this.state.tags}
+                    submitUpdate={this.submitUpdate}
+                    handleModal={this.showModal}
                     confirmDelete={this.confirmDelete}
+                    handleUpdate={this.updateForm}
                     showConfirm={this.state.showConfirm}
                     images={this.state.images}
                     onLogout={this.logoutUsers}
@@ -475,7 +501,6 @@ class App extends Component {
             />
 
 
-
             <Route
               exact
               path=
@@ -483,6 +508,7 @@ class App extends Component {
               render={props =>
                 <PublicProfile
                   {...props}
+                  message={this.state.message}
                   currentUser={this.state.currentUser}
                   handleFollow={this.handleFollow}
                   users={this.state.users}
