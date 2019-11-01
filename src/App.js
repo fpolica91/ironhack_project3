@@ -483,6 +483,7 @@ class App extends Component {
               render={props =>
                 <PublicProfile
                   {...props}
+                  currentUser={this.state.currentUser}
                   handleFollow={this.handleFollow}
                   users={this.state.users}
                   images={this.state.images}
