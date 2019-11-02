@@ -2,13 +2,14 @@ import React from 'react';
 import { Redirect, Link, NavLink, Route, Switch } from "react-router-dom"
 import SweetAlert from "react-bootstrap-sweetalert"
 import Edit from './edit.form';
+import Following from './user.follow';
 
 
 
 
 const UserProfile = (props) => {
 
-    const { images, currentUser } = props
+    const { images, currentUser, users } = props
 
     const pics = images.filter(image => image.owner._id === currentUser._id)
     console.log(pics)
@@ -30,8 +31,22 @@ const UserProfile = (props) => {
                             Logout
                         </button>
 
+                        <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => props.showFollow()}
+                        >
+                            Followers
+                         </button>
 
                     </div>
+                    {props.showFollowers === true &&
+                        <Following
+                            currentUser={props.currentUser}
+                            users={props.users}
+                        />
+                    }
+
+
                 </div>
                 {pics && pics.map(pic => {
                     return (

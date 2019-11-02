@@ -33,6 +33,7 @@ class App extends Component {
     tags: "",
     query: "",
     showConfirm: false,
+    showFollow: false,
     // imageFile: [],
     url: "http://localhost:5000/api/things",
     fullPostUrl: "http://localhost:5000/createNewPost",
@@ -349,7 +350,6 @@ class App extends Component {
     images[index] = { ...images[index] }
     images[index].tags = []
     images[index].tags.push(tags)
-
     images[index].caption = caption
     images[index].modal = false
     this.setState({
@@ -387,6 +387,12 @@ class App extends Component {
       .catch(err => console.log(err))
   }
 
+
+  showFollowers = () => {
+    this.setState({
+      showFollow: !this.state.showFollow
+    })
+  }
 
 
 
@@ -499,6 +505,8 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
+                    showFollowers={this.state.showFollow}
+                    showFollow={this.showFollowers}
                     caption={this.state.caption}
                     tags={this.state.tags}
                     submitUpdate={this.submitUpdate}
@@ -508,6 +516,7 @@ class App extends Component {
                     showConfirm={this.state.showConfirm}
                     images={this.state.images}
                     onLogout={this.logoutUsers}
+                    users={this.state.users}
                     currentUser={this.state.currentUser}
                     onDelete={this.handleDelete}
                     cancelDelete={this.cancelDelete}
