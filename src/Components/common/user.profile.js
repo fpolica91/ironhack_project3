@@ -3,6 +3,8 @@ import { Redirect, Link, NavLink, Route, Switch } from "react-router-dom"
 import SweetAlert from "react-bootstrap-sweetalert"
 import Edit from './edit.form';
 import Following from './user.follow';
+import "../../user.follow.css";
+
 
 
 
@@ -39,6 +41,7 @@ const UserProfile = (props) => {
                          </button>
 
                     </div>
+
                     {props.showFollowers === true &&
                         <Following
                             currentUser={props.currentUser}
