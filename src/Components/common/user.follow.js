@@ -9,6 +9,7 @@ const Following = ({ users, currentUser }) => {
     const user_followers = users.filter(user => user._id === currentUser._id)
         .map(user => user.followers)[0]
 
+
     console.log(user_followers)
     return (
         <div className="follower-container  box" role="dialog" >

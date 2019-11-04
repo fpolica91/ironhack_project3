@@ -557,6 +557,9 @@ class App extends Component {
               render={props =>
                 <PublicProfile
                   {...props}
+                  showFollowers={this.state.showFollow}
+                  showFollowing={this.state.showFollowig}
+                  showFollow={this.showFollowers}
                   message={this.state.message}
                   currentUser={this.state.currentUser}
                   handleFollow={this.handleFollow}
