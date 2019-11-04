@@ -34,6 +34,7 @@ class App extends Component {
     query: "",
     showConfirm: false,
     showFollow: false,
+    showFollowig: false,
     // imageFile: [],
     url: "http://localhost:5000/api/things",
     fullPostUrl: "http://localhost:5000/createNewPost",
@@ -369,29 +370,49 @@ class App extends Component {
   handleFollow = (e, user) => {
     const { newPostUrl } = this.state
     const { currentUser } = this.state
-    axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
-      .then(response => {
-        console.log(response.data.message)
-        const users = [...this.state.users]
-        const ind = users.findIndex(us => us._id === currentUser._id)
-        const index = users.findIndex(us => us._id === user)
-        users[index] = { ...users[index] }
-        users[ind] = { ...users[ind] }
-        users[index].followers = response.data.followers
-        users[ind].following = response.data.following
-        this.setState({
-          users,
-          message: response.data.message
-        })
+    const users = [...this.state.users]
+    const requesting = users.findIndex(usr => usr._id === currentUser._id)
+    const requested = users.findIndex(usr => usr._id === user)
+    users[requesting] = { ...users[requesting] }
+    users[requested] = { ...users[requested] }
+    if (users[requesting].following.some(followed => followed._id === user)) {
+      users[requesting].following.splice(requested, 1)
+      users[requested].followers.splice(requesting, 1)
+      this.setState({
+        users,
+        message: "Follow"
       })
+    } else {
+      users[requested].followers.push(users[requesting])
+      users[requesting].following.push(users[requested])
+      this.setState({
+        users,
+        message: "Following"
+      })
+    }
+
+    axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
+      .then(response => console.log(response.data))
       .catch(err => console.log(err))
+
   }
 
 
-  showFollowers = () => {
-    this.setState({
-      showFollow: !this.state.showFollow
-    })
+  showFollowers = (e) => {
+
+    console.log(e.currentTarget.id)
+    if (e.currentTarget.id === "followers") {
+      this.setState({
+        showFollow: !this.state.showFollow,
+        showFollowig: false
+      })
+    }
+    if (e.currentTarget.id === "following") {
+      this.setState({
+        showFollowig: !this.state.showFollowig,
+        showFollow: false
+      })
+    }
   }
 
 
@@ -506,6 +527,7 @@ class App extends Component {
                   <UserProfile
                     {...props}
                     showFollowers={this.state.showFollow}
+                    showFollowing={this.state.showFollowig}
                     showFollow={this.showFollowers}
                     caption={this.state.caption}
                     tags={this.state.tags}

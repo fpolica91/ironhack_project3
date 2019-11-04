@@ -3,6 +3,7 @@ import { Redirect, Link, NavLink, Route, Switch } from "react-router-dom"
 import SweetAlert from "react-bootstrap-sweetalert"
 import Edit from './edit.form';
 import Following from './user.follow';
+import Followed from "./user.following"
 import "../../user.follow.css";
 
 
@@ -34,16 +35,33 @@ const UserProfile = (props) => {
                         </button>
 
                         <button
+                            id="followers"
                             className="btn btn-sm btn-primary"
-                            onClick={() => props.showFollow()}
+                            onClick={(e) => props.showFollow(e)}
                         >
                             Followers
+                         </button>
+
+                        <button
+                            id="following"
+                            className="btn btn-sm btn-secondary"
+                            onClick={(e) => props.showFollow(e)}
+                        >
+                            Following
                          </button>
 
                     </div>
 
                     {props.showFollowers === true &&
                         <Following
+                            currentUser={props.currentUser}
+                            users={props.users}
+                        />
+                    }
+
+                    {props.showFollowing === true &&
+
+                        <Followed
                             currentUser={props.currentUser}
                             users={props.users}
                         />
