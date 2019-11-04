@@ -367,33 +367,40 @@ class App extends Component {
 
   }
 
-  handleFollow = (e, user) => {
+  handleFollow = (user) => {
+
     const { newPostUrl } = this.state
     const { currentUser } = this.state
+
     const users = [...this.state.users]
-    const requesting = users.findIndex(usr => usr._id === currentUser._id)
-    const requested = users.findIndex(usr => usr._id === user)
-    users[requesting] = { ...users[requesting] }
-    users[requested] = { ...users[requested] }
-    if (users[requesting].following.some(followed => followed._id === user)) {
-      users[requesting].following.splice(requested, 1)
-      users[requested].followers.splice(requesting, 1)
+    let index = users.indexOf(user)
+
+    let found = users[index].followers.find(follower => follower._id === currentUser._id)
+
+    if (!found) {
+      users[index].followers.push(currentUser)
+      users.filter(user => user._id === currentUser._id)
+        .map(item => item.following.push(user))
+      this.setState({ users, message: "Following" })
+    }
+
+    if (found) {
+      let req = users[index].followers.find((follower, index) => follower._id === currentUser._id, index)
+      let requesting = users.find(user => user._id === currentUser._id)
+      let index1 = users.indexOf(requesting)
+      let req1 = users[index1].following.find(followed => followed._id === user._id)
+      let index_requested = users[index1].following.indexOf(req1)
+      let index_req = users[index].followers.indexOf(req)
+      users[index1].following.splice(index_requested, 1)
+      users[index].followers.splice(index_req, 1)
       this.setState({
         users,
         message: "Follow"
       })
-    } else {
-      users[requested].followers.push(users[requesting])
-      users[requesting].following.push(users[requested])
-      this.setState({
-        users,
-        message: "Following"
-      })
+
     }
 
-    axios.post(`${newPostUrl}/follow/${user}`, { currentUser })
-      .then(response => console.log(response.data))
-      .catch(err => console.log(err))
+    axios.post(`${newPostUrl}/follow/${user._id}`, { currentUser })
 
   }
 

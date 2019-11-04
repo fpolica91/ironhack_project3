@@ -38,7 +38,7 @@ const PublicProfile = (props) => {
                 <div className="buttons" >
                     <button
                         className="btn btn-sm  btn-primary"
-                        onClick={e => props.handleFollow(e, user._id)}
+                        onClick={e => props.handleFollow(user)}
                     >
                         {message()}
                         <i className="fa fa-user-plus">{props.message ? props.message : message() ? "Following" : !message() ? "Follow" : "Loading"}</i>
