@@ -584,7 +584,8 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
-
+                    handleSubmit={this.handleComment}
+                    comments={this.state.comments}
                     showFollowers={this.state.showFollow}
                     showFollowing={this.state.showFollowig}
                     showFollow={this.showFollowers}

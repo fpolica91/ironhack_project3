@@ -70,6 +70,7 @@ const UserProfile = (props) => {
 
                 </div>
                 {pics && pics.map(pic => {
+                    console.log(pic)
                     return (
 
                         <div className="worldContainer">
@@ -85,9 +86,18 @@ const UserProfile = (props) => {
                                     <p>{pic.caption}</p>
                                     {pic.tags && pic.tags.map(tag => {
                                         return tag.split(' ').map(item => {
-                                            return (<li>{item}</li>)
+                                            return (
+                                                <div>
+                                                    <li>{item}</li>
+                                                </div>
+
+                                            )
                                         })
                                     })}
+
+
+
+
 
                                 </div>
 
@@ -128,6 +138,52 @@ const UserProfile = (props) => {
                                         Do you want to delete this post?
                                </SweetAlert>
                                 }
+
+
+                                <div className="likes-div">
+                                    {
+
+                                        pic.likes.length === 0 ? "No one likes this" :
+                                            pic.likes.length < 2 ? `${pic.likes[0].username} Likes this` :
+                                                pic.likes.length === 2 ? `${pic.likes[0].username} and ${pic.likes[1].username}  Like this` :
+                                                    pic.likes.length > 2 ? `${pic.likes[0].username} , ${pic.likes[1].username}  
+                                                and ${pic.likes.length - 2}
+                                                others Like this` : null
+
+                                    }
+                                </div>
+
+
+
+
+                                <div className="comments-div" style={{ border: "solid" }}>
+                                    {
+                                        pic.comments.length === 0 ? "No Comments" :
+                                            pic.comments.map(comment => {
+                                                return (
+                                                    <div>
+                                                        <span>{comment.user.username}</span>
+                                                        <p>{comment.comment}</p>
+                                                    </div>
+                                                )
+                                            })
+                                    }
+                                    <form onSubmit={(e) => props.handleSubmit(e, pic, currentUser)}>
+
+                                        <button style={{
+                                            border: "0",
+
+                                        }}>  <i className="fa fa-comments-o" /> </button>
+
+                                        <textarea value={props.comments} name="comments" onChange={(e) => props.handleUpdate(e)} />
+
+                                        <button>save</button>
+                                    </form>
+
+                                </div>
+
+
+
 
                             </div>
                         </div>
