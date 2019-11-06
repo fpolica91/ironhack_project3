@@ -15,7 +15,7 @@ const UserProfile = (props) => {
     const { images, currentUser, users } = props
 
     const pics = images.filter(image => image.owner._id === currentUser._id)
-    console.log(pics)
+    let url = props.match.params.id
 
 
 

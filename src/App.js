@@ -44,6 +44,7 @@ class App extends Component {
     clone: [],
     selectedFile: null,
     message: "",
+    comments: ""
   };
 
   async componentDidMount() {
@@ -261,22 +262,45 @@ class App extends Component {
   handleLike = image => {
     const { newPostUrl } = this.state;
     const { currentUser } = this.state;
+    const images = [...this.state.images]
     const user = { ...this.state.currentUser }
+    const users = [...this.state.users]
+    let owner = users.find(user => user._id === image.owner._id)
+    let ind = users.indexOf(owner)
+    users[owner] = { ...users[owner] }
+
+
+
+    const image_index = images.indexOf(image)
+    images[image_index] = { ...images[image_index] }
+    let index = images[image_index].likes.find(like => like._id === user._id)
+    console.log(images[image_index].likes)
+
+    console.log(index)
+
+    if (!index) {
+      images[image_index].likes.push(user)
+      this.setState({
+        users,
+        images,
+        currentUser
+      })
+    }
+
+    if (index) {
+      let us_r = images[image_index].likes.find(like => like._id === user._id)
+      let user_index = images[image_index].likes.indexOf(us_r)
+      images[image_index].likes.splice(user_index, 1)
+      this.setState({
+        users,
+        images,
+        currentUser
+      })
+    }
+
+
     axios
       .post(`${newPostUrl}/update/${image._id}`, { currentUser })
-      .then(response => {
-        console.log(response.data.likes)
-        const img = [...this.state.images];
-        const index = img.indexOf(image);
-        img[index] = { ...img[index] }
-        console.log(img[index])
-        img[index].likes = response.data.likes
-        img[index].disabled = !img[index].disabled;
-        this.setState({
-          images: img,
-          currentUser: user
-        });
-      })
       .catch(err => {
         if (err) {
           console.log(err)
@@ -406,8 +430,6 @@ class App extends Component {
 
 
   showFollowers = (e) => {
-
-    console.log(e.currentTarget.id)
     if (e.currentTarget.id === "followers") {
       this.setState({
         showFollow: !this.state.showFollow,
@@ -420,6 +442,35 @@ class App extends Component {
         showFollow: false
       })
     }
+  }
+
+
+
+  handleComment = (e, image, user) => {
+    e.preventDefault()
+
+    const { currentUser } = this.state
+    const images = [...this.state.images]
+    const users = [...this.state.users]
+    const user_index = users.indexOf(user)
+    users[user_index] = { ...users[user_index] }
+    const { comments } = this.state
+    let index = images.indexOf(image)
+    images[index] = { ...images[index] }
+    images[index].comments.push({ user: currentUser, comment: comments })
+
+    this.setState({
+      currentUser,
+      images,
+      users,
+      comments: ""
+    })
+
+    const { newPostUrl } = this.state
+    axios.put(`${newPostUrl}/addComments/${image._id}`, {
+      currentUser, comments
+    })
+
   }
 
 
@@ -533,6 +584,7 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
+
                     showFollowers={this.state.showFollow}
                     showFollowing={this.state.showFollowig}
                     showFollow={this.showFollowers}
@@ -564,6 +616,9 @@ class App extends Component {
               render={props =>
                 <PublicProfile
                   {...props}
+                  handleSubmit={this.handleComment}
+                  handleChange={this.updateForm}
+                  comments={this.state.comments}
                   showFollowers={this.state.showFollow}
                   showFollowing={this.state.showFollowig}
                   showFollow={this.showFollowers}
