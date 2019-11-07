@@ -5,7 +5,9 @@ import Edit from './edit.form';
 import Following from './user.follow';
 import Followed from "./user.following"
 import "../../user.follow.css";
-
+import CommentTable from './commentTable';
+import Tags from './tags';
+import Likes from './Likes';
 
 
 
@@ -83,21 +85,11 @@ const UserProfile = (props) => {
                                     </Link>
                                 </div>
                                 <div>
-                                    <p>{pic.caption}</p>
-                                    {pic.tags && pic.tags.map(tag => {
-                                        return tag.split(' ').map(item => {
-                                            return (
-                                                <div>
-                                                    <li>{item}</li>
-                                                </div>
-
-                                            )
-                                        })
-                                    })}
 
 
-
-
+                                    <Tags
+                                        image={pic}
+                                    />
 
                                 </div>
 
@@ -141,44 +133,28 @@ const UserProfile = (props) => {
 
 
                                 <div className="likes-div">
-                                    {
-
-                                        pic.likes.length === 0 ? "No one likes this" :
-                                            pic.likes.length < 2 ? `${pic.likes[0].username} Likes this` :
-                                                pic.likes.length === 2 ? `${pic.likes[0].username} and ${pic.likes[1].username}  Like this` :
-                                                    pic.likes.length > 2 ? `${pic.likes[0].username} , ${pic.likes[1].username}  
-                                                and ${pic.likes.length - 2}
-                                                others Like this` : null
-
-                                    }
+                                    <Likes
+                                        pic={pic}
+                                    />
                                 </div>
 
 
 
 
-                                <div className="comments-div" style={{ border: "solid" }}>
-                                    {
-                                        pic.comments.length === 0 ? "No Comments" :
-                                            pic.comments.map(comment => {
-                                                return (
-                                                    <div>
-                                                        <span>{comment.user.username}</span>
-                                                        <p>{comment.comment}</p>
-                                                    </div>
-                                                )
-                                            })
-                                    }
-                                    <form onSubmit={(e) => props.handleSubmit(e, pic, currentUser)}>
 
-                                        <button style={{
-                                            border: "0",
 
-                                        }}>  <i className="fa fa-comments-o" /> </button>
+                                <div className="comments-div" >
 
-                                        <textarea value={props.comments} name="comments" onChange={(e) => props.handleUpdate(e)} />
 
-                                        <button>save</button>
-                                    </form>
+                                    <CommentTable
+                                        user={currentUser}
+                                        image={pic}
+                                        owner={currentUser}
+                                        handleSubmit={props.handleSubmit}
+                                        comments={props.comments}
+                                        handleChange={props.handleUpdate}
+
+                                    />
 
                                 </div>
 
