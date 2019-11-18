@@ -20,6 +20,9 @@ import UserProfile from "./Components/common/user.profile";
 import PublicProfile from "./Components/common/user.public.profile";
 
 
+
+
+
 class App extends Component {
   state = {
     currentUser: null,
@@ -35,7 +38,7 @@ class App extends Component {
     showConfirm: false,
     showFollow: false,
     showFollowig: false,
-    // imageFile: [],
+    notifications: [],
     url: "http://localhost:5000/api/things",
     fullPostUrl: "http://localhost:5000/createNewPost",
     postImgUrl: "http://localhost:5000/api/upload",
@@ -44,12 +47,19 @@ class App extends Component {
     clone: [],
     selectedFile: null,
     message: "",
-    comments: ""
+    comments: "",
+    coordinates: {
+      lat: 0,
+      long: 0
+    },
+    address: ""
   };
 
   async componentDidMount() {
     await this.get_data_torender();
     await this.checkedLoggedIn();
+    await this.getNotifications()
+
   }
 
   // logged in users!
@@ -111,9 +121,10 @@ class App extends Component {
               withCredentials: true
             })
             .then(response => {
+              console.log(response.data)
               const clone = [...this.state.images];
               console.log(response.data)
-              clone.push(response.data);
+              clone.push(response.data.post);
               this.setState({
                 images: clone
               });
@@ -125,6 +136,42 @@ class App extends Component {
         console.log("Error while uploading the file: ", err);
       });
   };
+
+
+  handleCoordinates = async (coordinate) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.geoLocate(position)
+        this.setState({
+          coordinates: {
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+          }
+        })
+      })
+    }
+  }
+
+
+  geoLocate = async (position) => {
+    let lat = position.coords.latitude
+    let long = position.coords.longitude
+    axios({
+      "method": "GET",
+      "crossDomain": true,
+      "url": `https://us1.locationiq.com/v1/reverse.php?key=bc6a72a073f3ed&lat=${lat}&lon=${long}&format=json`,
+    }).then(response => {
+      let location = response.data.address
+      this.setState({
+        address: location
+      })
+    })
+
+      .catch(err => console.log(err))
+
+  }
+
+
 
   renderImages = () => {
     const { images } = this.state.images;
@@ -249,8 +296,8 @@ class App extends Component {
           password: ""
         });
 
-        alert("You are logged in.");
         return <Redirect to="/profile" />;
+
       })
       .catch(err => {
         console.log(err);
@@ -268,9 +315,6 @@ class App extends Component {
     let owner = users.find(user => user._id === image.owner._id)
     let ind = users.indexOf(owner)
     users[owner] = { ...users[owner] }
-
-
-
     const image_index = images.indexOf(image)
     images[image_index] = { ...images[image_index] }
     let index = images[image_index].likes.find(like => like._id === user._id)
@@ -301,6 +345,7 @@ class App extends Component {
 
     axios
       .post(`${newPostUrl}/update/${image._id}`, { currentUser })
+
       .catch(err => {
         if (err) {
           console.log(err)
@@ -473,6 +518,17 @@ class App extends Component {
 
   }
 
+  getNotifications = async () => {
+    const { newPostUrl } = this.state
+    await axios.get(`${newPostUrl}/notifications`)
+      .then(response => {
+        let notifications = response.data
+        this.setState({
+          notifications
+        })
+      })
+  }
+
 
 
   render() {
@@ -489,6 +545,7 @@ class App extends Component {
                 this.state.currentUser ? (
                   <PostForm
                     {...props}
+                    handleCoords={this.handleCoordinates}
                     handleSubmit={this.postNewExp}
                     changeFile={this.changeFile}
                     changeUrl={this.changeImgUrl}
@@ -584,6 +641,7 @@ class App extends Component {
                 this.state.currentUser ? (
                   <UserProfile
                     {...props}
+                    notifications={this.state.notifications}
                     handleSubmit={this.handleComment}
                     comments={this.state.comments}
                     showFollowers={this.state.showFollow}
@@ -617,6 +675,7 @@ class App extends Component {
               render={props =>
                 <PublicProfile
                   {...props}
+                  notifications={this.state.notifications}
                   handleSubmit={this.handleComment}
                   handleChange={this.updateForm}
                   comments={this.state.comments}
@@ -630,6 +689,8 @@ class App extends Component {
                   images={this.state.images}
                 />}
             />
+
+
           </Switch>
         </div>
       </div>

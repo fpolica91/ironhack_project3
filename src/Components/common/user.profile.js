@@ -8,13 +8,14 @@ import "../../user.follow.css";
 import CommentTable from './commentTable';
 import Tags from './tags';
 import Likes from './Likes';
+import Feed from './feed';
 
 
 
 
 const UserProfile = (props) => {
 
-    const { images, currentUser, users } = props
+    const { images, currentUser, users, notifications } = props
 
     const pics = images.filter(image => image.owner._id === currentUser._id)
     let url = props.match.params.id
@@ -24,7 +25,7 @@ const UserProfile = (props) => {
     if (currentUser) {
         return (
             <div>
-                <div className="user-profile">
+                <div className="user-profile" key={currentUser._id}>
                     {currentUser && <p>Welcome {currentUser.username}    </p>}
                     {currentUser && <img src={currentUser.imageUrl} style={{
                         borderRadius: 70
@@ -138,14 +139,7 @@ const UserProfile = (props) => {
                                     />
                                 </div>
 
-
-
-
-
-
                                 <div className="comments-div" >
-
-
                                     <CommentTable
                                         user={currentUser}
                                         image={pic}
@@ -161,12 +155,20 @@ const UserProfile = (props) => {
 
 
 
+
                             </div>
                         </div>
 
                     )
                 })}
                 {!pics.length && <p>You dont have any posts </p>}
+                {/* 
+                <Feed
+                    currentUser={currentUser}
+                    notifications={notifications}
+                    users={users}
+                /> */}
+
             </div>
         );
     } else {

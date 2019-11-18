@@ -1,44 +1,45 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom'
+
 class Login extends React.Component {
 
     message = null
 
-    render(){
+    render() {
         const { username, password } = this.props.formValues
-        if(this.props.currentUser){
+        if (this.props.currentUser) {
             return (
-                <Redirect to="/profile"/>
+                <Redirect to="/profile" />
             )
-        }else{
-        return(
-            <div>
-            <section>
+        } else {
+            return (
+                <div>
+                    <section>
 
-            <h2> Login </h2>
+                        <h2> Login </h2>
 
-            <form onSubmit ={this.props.handleSubmit} >
+                        <form onSubmit={this.props.handleSubmit} >
 
-                <label> Username: </label>
-                 <input value={username} onChange={ e => this.props.onChangeValue(e)} type="text" name="username" placeholder="username" />
+                            <label> Username: </label>
+                            <input value={username} onChange={e => this.props.onChangeValue(e)} type="text" name="username" placeholder="username" />
 
 
 
-                <label> Password</label>
-                <input value={password} onChange={ e => this.props.onChangeValue(e)} type="password" name="password" placeholder="***********"/>
-                 <button> Login </button>
+                            <label> Password</label>
+                            <input value={password} onChange={e => this.props.onChangeValue(e)} type="password" name="password" placeholder="***********" />
+                            <button> Login </button>
 
-            </form>
+                        </form>
 
-            {/* if the message is not null (basically if there's a message) then show it in this <div> tag */}
+                        {/* if the message is not null (basically if there's a message) then show it in this <div> tag */}
 
-            { this.message && <div> { this.message } </div> }
+                        {this.message && <div> {this.message} </div>}
 
-        </section>
-            
-            </div>
-        )
-    }
+                    </section>
+
+                </div>
+            )
+        }
     }
 }
 
@@ -67,7 +68,7 @@ export default Login;
     //         console.log(responseFromServer.data.userDoc)
     //         const { userDoc } = responseFromServer.data;
     //         this.props.onUserChange(userDoc);
-          
+
     //         alert("You are logged in.")
     //         // return <Redirect to='/profile'/>
     //     })

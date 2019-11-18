@@ -1,13 +1,31 @@
 import React from 'react';
 import Following from './user.follow';
 import Followed from './user.following';
-// import Comments from './comments';
-// import CommentForm from './commentForm';
-// import Test from './testfile';
 import CommentTable from './commentTable';
 import Likes from './Likes';
+import Tags from './tags';
+import ButtonPanel from './buttons.panel';
+import styled from 'styled-components'
+import Places from './Places'
+import { Link } from 'react-router-dom';
+
+
+const imageBox = styled.div`
+width: 400px;
+height: 300px
+`
+
+const imgDiv = styled.img`
+    width:100%, 
+    height: 100%
+`
+
+
+
 
 const PublicProfile = (props) => {
+
+    let location;
     const { id } = props.match.params
     const { users, currentUser, images } = props
 
@@ -29,8 +47,6 @@ const PublicProfile = (props) => {
         }
     }
 
-
-
     if (followed !== null) {
         return (
             <div className="user-profile" >
@@ -38,31 +54,18 @@ const PublicProfile = (props) => {
                 {user && <img src={user.imageUrl} style={{
                     borderRadius: 70
                 }} />}
-                <div className="buttons" >
-                    <button
-                        className="btn btn-sm  btn-primary"
-                        onClick={e => props.handleFollow(user)}
-                    >
-                        <i className="fa fa-user-plus">{props.message ? props.message : message() === true ? "Following" : !message() ? "Follow" : "Loading"}</i>
-                    </button>
+                <div  >
 
-                    <button
-                        id="followers"
-                        className="btn btn-sm btn-primary"
-                        onClick={(e) => props.showFollow(e)}
-                    >
-                        Followers
-                         </button>
 
-                    <button
-                        id="following"
-                        className="btn btn-sm btn-secondary"
-                        onClick={(e) => props.showFollow(e)}
-                    >
-                        Following
-                         </button>
-
+                    <ButtonPanel
+                        handleFollow={props.handleFollow}
+                        showFollow={props.showFollow}
+                        messagE={message()}
+                        user={user}
+                        message={props.message}
+                    />
                 </div>
+
                 {props.showFollowers === true &&
                     <Following
                         users={props.users}
@@ -80,16 +83,33 @@ const PublicProfile = (props) => {
                 <div className="public-images">
 
                     {public_images.map(public_image => {
-                        return (
-                            <div key={public_image._id} >
-                                <img src={public_image.image}
-                                    alt={`${public_image.owner.username}'s image`} />
-                                <div>
-                                    <div className="likes-div">
 
+                        return (
+
+                            <div key={public_image._id} >
+                                <imageBox>
+                                    <img
+                                        style={{ height: "50%", width: "50%" }}
+                                        src={public_image.image}
+                                        alt={`${public_image.owner.username}'s image`}
+                                    />
+                                </imageBox>
+                                <div>
+
+                                    <Link>{public_image.address && public_image.address.city}</Link>
+                                    <div className="tags-div">
+
+                                        <Tags
+                                            image={public_image}
+                                        />
+                                    </div>
+
+
+                                    <div className="likes-div">
                                         <Likes
                                             pic={public_image}
                                         />
+
                                     </div>
                                     <CommentTable
                                         user={currentUser}
@@ -101,15 +121,27 @@ const PublicProfile = (props) => {
 
                                     />
 
+
+                                    {
+                                        public_image.coordinates !== undefined ?
+                                            <div className="">
+                                                {/* <Places
+                                                    images={public_image.coordinates}
+                                                /> */}
+                                            </div>
+                                            :
+                                            null
+
+                                    }
                                 </div>
+
                             </div>
+
                         )
                     })}
 
 
                 </div>
-
-
 
             </div>
         )

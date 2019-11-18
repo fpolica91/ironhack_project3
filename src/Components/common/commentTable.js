@@ -5,7 +5,7 @@ import Comments from './comments';
 
 const CommentTable = (props) => {
     return (
-        <div classname="media">
+        <div className="media">
             <div className="container" style={{ width: "60%" }} >
 
                 <CommentForm

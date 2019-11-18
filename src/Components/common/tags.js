@@ -7,9 +7,9 @@ const Tags = (props) => {
         <div>
             <ul>
                 {image && image.tags.map(tag => {
-                    return tag.split(' ').map(item => {
+                    return tag.split(' ').map((item, index) => {
                         return (
-                            <div>
+                            <div key={index}>
                                 <li>{item}</li>
                             </div>
                         )

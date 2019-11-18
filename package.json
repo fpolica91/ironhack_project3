@@ -8,6 +8,7 @@
     "boostrap": "^2.0.0",
     "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
+    "google-maps-react": "^2.0.2",
     "history": "^4.10.1",
     "react": "^16.10.2",
     "react-bootstrap-sweetalert": "^5.0.1",
@@ -15,6 +16,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "react-toastify": "^5.4.0",
+    "styled-components": "^4.4.1",
     "three": "^0.109.0",
     "three-orbitcontrols": "^2.108.1"
   },

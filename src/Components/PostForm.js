@@ -1,13 +1,16 @@
 import React from 'react';
-import {Redirect} from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
-class PostForm extends React.Component{
+class PostForm extends React.Component {
 
-    
-     state = {
-    imageUrl: "",
-    imageFile: [],
 
+    state = {
+        imageUrl: "",
+        imageFile: [],
+    }
+
+    async  componentDidMount() {
+        await this.props.handleCoords()
 
     }
 
@@ -42,7 +45,7 @@ class PostForm extends React.Component{
 
     canvasContainer = {
         "display": "block",
-        "border": "1px solid green", 
+        "border": "1px solid green",
         "margin": "20px 18vw",
         height: "350px",
         width: "62vw"
@@ -58,45 +61,46 @@ class PostForm extends React.Component{
         justifyContent: "center",
         alignText: "center"
     }
-// END OF STYLING
+    // END OF STYLING
 
     uploadPost = (e) => {
-e.preventDefault();
-console.log(e.target);
+        e.preventDefault();
+        console.log(e.target);
     }
 
     seePreview = (e) => {
         e.preventDefault();
 
         console.log(e.target.files);
-        if(e.target.files[0] && e.target.files[0].size <= 10485760 ){
-        let newImg = URL.createObjectURL(e.target.files[0])
-        this.props.changeFile(e.target.files[0])
-        this.props.changeUrl(newImg)
-    
-        this.setState({
-            imageUrl: newImg,
-            imageFile: e.target.files[0]})
+        if (e.target.files[0] && e.target.files[0].size <= 10485760) {
+            let newImg = URL.createObjectURL(e.target.files[0])
+            this.props.changeFile(e.target.files[0])
+            this.props.changeUrl(newImg)
 
-        this.changePreview(newImg)
-        
-        let myInput = document.getElementById('myFileList')
-        myInput.setAttribute('disabled', true);
-        myInput.className = "inputDisabled"
-    }else{
-        // this.setState({imageUrl: "",
-        //     imageFile: []})
-    }
+            this.setState({
+                imageUrl: newImg,
+                imageFile: e.target.files[0]
+            })
+
+            this.changePreview(newImg)
+
+            let myInput = document.getElementById('myFileList')
+            myInput.setAttribute('disabled', true);
+            myInput.className = "inputDisabled"
+        } else {
+            // this.setState({imageUrl: "",
+            //     imageFile: []})
+        }
     }
 
     changePreview = (value) => {
-    
+
         // return (
         //     <div style={this.canvasStyle}>
         //     {this.state.imageUrl && <ThreeMap url={value} height="400" width="200"/>}
         //     </div>
         // )
-   
+
     }
 
     // changeText = (e) =>{
@@ -106,61 +110,62 @@ console.log(e.target);
     // }
 
     removePicture = (e) => {
-      //  e.preventDefault();
+        //  e.preventDefault();
         let myFileList = document.getElementById('myFileList');
         myFileList.removeAttribute('disabled');
         myFileList.value = null
         myFileList.className = "inputfile"
-        this.setState({imageUrl: "",
-        imageFile: []
-    })
+        this.setState({
+            imageUrl: "",
+            imageFile: []
+        })
     }
 
-    renderRedirect = async  () =>{
-        
+    renderRedirect = async () => {
+
         return (
 
-            <Redirect to="/login"/>
+            <Redirect to="/login" />
         )
     }
 
-    render(){
-        const {caption, tags, currentUser} = this.props.formValues
-        if(currentUser){
-        return(
-            <div className="formPost">
-            <h1>New Post</h1>
-            <form style={this.formStyle} onSubmit={this.props.handleSubmit}>
+    render() {
+        const { caption, tags, currentUser } = this.props.formValues
+        if (currentUser) {
+            return (
+                <div className="formPost">
+                    <h1>New Post</h1>
+                    <form style={this.formStyle} onSubmit={this.props.handleSubmit}>
 
-            <input type="file" onChange={this.seePreview} id="myFileList" className="inputfile"></input>
-            <label for="myFileList">Choose a file</label>
+                        <input type="file" onChange={this.seePreview} id="myFileList" className="inputfile"></input>
+                        <label for="myFileList">Choose a file</label>
 
-            <button onClick={this.removePicture} className="removeBtn">REMOVE</button>
-          
-            
-            <div style={this.canvasContainer} id="myCanvasContainer">
-            {this.changePreview(this.state.imageUrl)}
-            </div>
-            <div>
-             <label htmlFor="tags"> Tags </label>
-            <input type="text" name="tags" value={tags} onChange={e => this.props.onChangeValue(e)}/>
-            </div>
-           
-            <textarea style={this.textAreaStyle} type="text" value={caption} onChange={ e => this.props.onChangeValue(e)} name="caption" placeholder="write a caption..."></textarea>
-            <button
-             style={this.createButton} > CREATE NEW EXPERIENCE</button>
-            </form>
+                        <button onClick={this.removePicture} className="removeBtn">REMOVE</button>
 
-            <div>
-          
-            </div>
-            </div>
-        )
+
+                        <div style={this.canvasContainer} id="myCanvasContainer">
+                            {this.changePreview(this.state.imageUrl)}
+                        </div>
+                        <div>
+                            <label htmlFor="tags"> Tags </label>
+                            <input type="text" name="tags" value={tags} onChange={e => this.props.onChangeValue(e)} />
+                        </div>
+
+                        <textarea style={this.textAreaStyle} type="text" value={caption} onChange={e => this.props.onChangeValue(e)} name="caption" placeholder="write a caption..."></textarea>
+                        <button
+                            style={this.createButton} > CREATE NEW EXPERIENCE</button>
+                    </form>
+
+                    <div>
+
+                    </div>
+                </div>
+            )
         } else {
             return (
-            <div>
-            {<p>login</p>  && this.renderRedirect()}
-            </div>
+                <div>
+                    {<p>login</p> && this.renderRedirect()}
+                </div>
             )
         }
     }
